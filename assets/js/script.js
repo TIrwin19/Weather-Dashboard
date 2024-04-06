@@ -1,3 +1,4 @@
+// Open Weather API URL and Key
 const baseURL = 'https://api.openweathermap.org/data/2.5'
 const apiKey = `20ce73b0d2cf9b0de3d0d7e0943f1b10`
 const form = $('.form')
@@ -7,7 +8,7 @@ const saved = $('.saved p')
 const cityText = $('.cityText')
 
 // Grab empty array
-function citiesArray(){
+function citiesArray() {
     const raw = localStorage.getItem('cities')
     const citiesArray = JSON.parse(raw) || []
     return citiesArray
@@ -50,11 +51,11 @@ function displayCurrentWeather(currentData) {
 }
 
 // Display five day weather
-function displayFiveDay(forecastData) {    
+function displayFiveDay(forecastData) {
     const forecastDiv = $('#forecast-div')
     forecastDiv.empty()
 
-    forecastData.list.forEach(function(fiveDayObj){
+    forecastData.list.forEach(function (fiveDayObj) {
         const date = dayjs(fiveDayObj.dt_txt).format('M/D/YYYY')
 
         if (fiveDayObj.dt_txt.includes('12')) {
@@ -72,8 +73,8 @@ function displayFiveDay(forecastData) {
     })
 }
 
-// Start the display Process
-function displaySearchedValue(searchedCity){
+// Start the current and five day display Process
+function displaySearchedValue(searchedCity) {
 
     getCurrentWeather(searchedCity)
         .then(displayCurrentWeather)
@@ -84,35 +85,32 @@ function displaySearchedValue(searchedCity){
 // Store input data to local storage
 function formInput(e) {
     e.preventDefault()
-    
+
     const cities = citiesArray()
     const cityInput = $('#city-input')
     const cityVal = cityInput.val()
 
     displaySearchedValue(cityVal)
-
-    if(!cities.some(cityObj => cityObj.city === cityVal)) {
+    // Gheck to see if the input already exists in local storage and if its an empty string 
+    if (!cities.some(cityObj => cityObj.city === cityVal) && cityVal !== '') {
 
         const savedCity = {
             city: cityVal
         }
-        
+
         cities.push(savedCity)
         localStorage.setItem('cities', JSON.stringify(cities))
-        // createCityHistory()
-        // displaySearchedValue(cityVal)
-
     }
 
     cityInput.val('')
 }
 
-function createCityHistory(){
+// Creade divs ahta append to the history section
+function renderCityHistory() {
     const cities = citiesArray()
 
-    cities.forEach(function(cityObj){
-
-        if (cityObj.city.trim()!== '') {
+    cities.forEach(function (cityObj) {
+        if( isCityInHistory(cityObj.city)) {
             history.append(`
             <div class='saved'>
             <p class="history-btn py-1 border border-dark-subtle rounded-2 bg-primary text-white">${cityObj.city}</p>
@@ -122,11 +120,23 @@ function createCityHistory(){
     })
 }
 
-function displayHistory(event){
+// Check to see if the city has already been rendered as a history item
+function isCityInHistory(city) {
+    const savedCities = $('.history-btn');
+    for (let i = 0; i < savedCities.length; i++) {
+        if (savedCities[i].textContent === city) {
+            return false;
+        }
+    }
+    return true;
+}
+
+// When the history divs are clicked it displays the weather for that city
+function displayHistory(event) {
     // Extract the text of the element that is clicked
     const clickedCity = $(event.target).text().trim()
-    // console.log(clickedCity)
-    const cities = citiesArray() 
+
+    const cities = citiesArray()
 
     const savedCity = cities.find(cityObj => cityObj.city === clickedCity)
 
@@ -135,8 +145,11 @@ function displayHistory(event){
     }
 }
 
-$(document).ready(function() {
-    createCityHistory()
+// History is rendered and event listeners on standby
+$(document).ready(function () {
+    renderCityHistory()
     $(document).on('click', '.saved p', displayHistory)
     submitBtn.on('click', formInput)
+    submitBtn.on('click',renderCityHistory)
+
 }) 
