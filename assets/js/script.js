@@ -41,6 +41,7 @@ function displayCurrentWeather(currentData) {
     const formattedDate = dayjs().format('MMM D, YYYY hh:mm a')
     icon.empty()
 
+    // Use use innertext to inject text into the exiting html elements, append theicon
     city.text(`${currentData.name}`)
     date.text(`${formattedDate}`)
     temp.text(`Tempurture: ${currentData.main.temp}° F`)
@@ -58,7 +59,7 @@ function displayFiveDay(forecastData) {
     forecastData.list.forEach(function (fiveDayObj) {
         const date = dayjs(fiveDayObj.dt_txt).format('M/D/YYYY')
 
-        if (fiveDayObj.dt_txt.includes('12')) {
+        if (fiveDayObj.dt_txt.includes('12:00')) {
             forecastDiv.append(`
             <div class="p-1 bg-info-subtle text-primary-emphasis rounded-1 shadow p-3 mb-2 bg-body-tertiary rounded">
                 <h3>${date}</h3>
