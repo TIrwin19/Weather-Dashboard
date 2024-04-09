@@ -102,7 +102,6 @@ function formInput(e) {
         cities.push(savedCity)
         localStorage.setItem('cities', JSON.stringify(cities))
     }
-
     cityInput.val('')
 }
 
@@ -152,5 +151,4 @@ $(document).ready(function () {
     $(document).on('click', '.saved p', displayHistory)
     submitBtn.on('click', formInput)
     submitBtn.on('click',renderCityHistory)
-
 }) 
